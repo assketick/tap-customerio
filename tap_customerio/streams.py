@@ -105,12 +105,14 @@ class CampaignsActions(CustomerIoStream):
                     "reply_to_id": action.get("reply_to_id"),
                     "preprocessor": action.get("preprocessor"),
                     "recipient": action.get("recipient"),
-                    "subject": action.get("subject"),
+                    "subject": action.get("subject", ""),
                     "bcc": action.get("bcc"),
                     "fake_bcc": action.get("fake_bcc"),
-                    "preheader_text": action.get("preheader_text"),
+                    "preheader_text": action.get("preheader_text", ""),
                 }
-                logging.warning(f'RESULT - {result}')
+                for key, val in result.items():
+                    if isinstance(val, str):
+                        result[key] = val.encode("ascii", "ignore").decode('utf-8')
                 yield result
 
 
