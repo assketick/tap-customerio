@@ -44,6 +44,50 @@ class CampaignsMetricsStream(CustomerIoStream):
         row['campaign_id'] = context['campaign_id']
         return row
 
+class CampaignsActions(CustomerIoStream):
+    name = "campaigns_actions"
+    parent_stream_type = CampaignsStream
+    path = "/campaigns/{campaign_id}/actions"
+    primary_keys = []
+    replication_key = None
+    schema_filepath = None
+    schema = th.PropertiesList(
+            th.Property("id", th.IntegerType),
+            th.Property("campaign_id", th.IntegerType),
+            th.Property("parent_action_id", th.IntegerType),
+            th.Property("deduplicate_id", th.StringType),
+            th.Property("name", th.StringType),
+            th.Property("layout", th.StringType),
+            th.Property("created", th.IntegerType),
+            th.Property("updated", th.IntegerType),
+            th.Property("body_amp", th.StringType),
+            th.Property("language", th.StringType),
+            th.Property("type", th.StringType),
+            th.Property("sending_state", th.StringType),
+            th.Property("from", th.StringType),
+            th.Property("from_id", th.IntegerType),
+            th.Property("reply_to", th.StringType),
+            th.Property("reply_to_id", th.IntegerType),
+            th.Property("preprocessor", th.StringType),
+            th.Property("recipient", th.StringType),
+            th.Property("subject", th.StringType),
+            th.Property("bcc", th.StringType),
+            th.Property("fake_bcc", th.BooleanType),
+            th.Property("preheader_text", th.StringType),
+    ).to_dict()
+
+    def post_process(self, row: dict, context: dict) -> dict | None:
+        row['campaign_id'] = context['campaign_id']
+        return row
+    
+    def parse_response(self, response: requests.Response) -> Iterable[dict]:
+        data = response.json()
+        actions = data.get("actions")
+
+        if actions:
+            for action in actions:
+                dct = {key: val for key, val in action.items() if key not in ('body', 'headers')}
+                yield dct
 
 
 class NewslettersStream(CustomerIoStream):

@@ -34,10 +34,11 @@ class TapCustomerIo(Tap):
         """
         return [
             streams.CampaignsStream(self),
-            streams.SegmentsStream(self),
-            streams.NewslettersStream(self),
-            streams.CampaignsMetricsStream(self),
-            streams.NewslettersMetricsStream(self),
+            streams.CampaignsActions(self),
+            # streams.SegmentsStream(self),
+            # streams.NewslettersStream(self),
+            # streams.CampaignsMetricsStream(self),
+            # streams.NewslettersMetricsStream(self),
         ]
 
 
