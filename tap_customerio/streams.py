@@ -86,8 +86,30 @@ class CampaignsActions(CustomerIoStream):
 
         if actions:
             for action in actions:
-                dct = {key: val for key, val in action.items() if key not in ('body', 'headers')}
-                yield dct
+                yield {
+                    "id": action.get("id"),
+                    "campaign_id": action.get("campaign_id"),
+                    "parent_action_id": action.get("parent_action_id"),
+                    "deduplicate_id": action.get("deduplicate_id"),
+                    "name": action.get("name"),
+                    "layout": action.get("layout"),
+                    "created": action.get("created"),
+                    "updated": action.get("updated"),
+                    "body_amp": action.get("body_amp"),
+                    "language": action.get("language"),
+                    "type": action.get("type"),
+                    "sending_state": action.get("sending_state"),
+                    "from": action.get("from"),
+                    "from_id": action.get("from_id"),
+                    "reply_to": action.get("reply_to"),
+                    "reply_to_id": action.get("reply_to_id"),
+                    "preprocessor": action.get("preprocessor"),
+                    "recipient": action.get("recipient"),
+                    "subject": action.get("subject"),
+                    "bcc": action.get("bcc"),
+                    "fake_bcc": action.get("fake_bcc"),
+                    "preheader_text": action.get("preheader_text"),
+                }
 
 
 class NewslettersStream(CustomerIoStream):
