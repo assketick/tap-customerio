@@ -15,7 +15,7 @@ from tap_customerio.client import CustomerIoStream
 SCHEMAS_DIR = Path(__file__).parent / Path("./schemas")
 # TODO: - Override `UsersStream` and `GroupsStream` with your own stream definition.
 #       - Copy-paste as many times as needed to create multiple stream types.
-
+import logging
 
 class CampaignsStream(CustomerIoStream):
 
@@ -86,7 +86,7 @@ class CampaignsActions(CustomerIoStream):
 
         if actions:
             for action in actions:
-                yield {
+                result = {
                     "id": action.get("id"),
                     "campaign_id": action.get("campaign_id"),
                     "parent_action_id": action.get("parent_action_id"),
@@ -110,6 +110,8 @@ class CampaignsActions(CustomerIoStream):
                     "fake_bcc": action.get("fake_bcc"),
                     "preheader_text": action.get("preheader_text"),
                 }
+                logging.warning(f'RESULT - {result}')
+                yield result
 
 
 class NewslettersStream(CustomerIoStream):
