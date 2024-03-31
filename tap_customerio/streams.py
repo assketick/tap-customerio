@@ -116,6 +116,53 @@ class CampaignsActions(CustomerIoStream):
                 yield result
 
 
+class CampaignsMessagesStream(CustomerIoStream):
+    name = "campaigns_messages"
+    parent_stream_type = CampaignsStream
+    path = "/campaigns/{campaign_id}/messages"
+    primary_keys = []
+    replication_key = None
+    schema_filepath = None
+    schema = th.PropertiesList(
+            th.Property("id", th.StringType),
+            th.Property("deduplicate_id", th.StringType),
+            th.Property("msg_template_id", th.IntegerType),
+            th.Property("action_id", th.IntegerType),
+            th.Property("customer_id", th.StringType),
+            th.Property("customer_identifiers", th.ObjectType(
+                th.Property("id", th.StringType),
+                th.Property("email", th.StringType),
+                th.Property("cio_id", th.StringType),
+            )),
+            th.Property("recipient", th.StringType),
+            th.Property("subject", th.StringType),
+            th.Property("metrics", th.ObjectType(
+                th.Property("delivered", th.IntegerType),
+                th.Property("sent", th.IntegerType),
+            )),
+            th.Property("created", th.IntegerType),
+            th.Property("failure_message", th.StringType),
+            th.Property("newsletter_id", th.StringType),
+            th.Property("content_id", th.IntegerType),
+            th.Property("campaign_id", th.IntegerType),
+            th.Property("broadcast_id", th.StringType),
+            th.Property("type", th.StringType),
+            th.Property("forgotten", th.BooleanType),
+    ).to_dict()
+
+    def post_process(self, row: dict, context: dict) -> dict | None:
+        row['campaign_id'] = context['campaign_id']
+        return row
+    
+    def parse_response(self, response: requests.Response) -> Iterable[dict]:
+        data = response.json()
+        # logging.warning(f"response - {data}")
+        messages = data['messages']
+
+        for message in messages:
+            yield message
+
+
 class NewslettersStream(CustomerIoStream):
 
     name = "newsletters"
