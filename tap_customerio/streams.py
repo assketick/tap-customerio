@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import typing as t
 from pathlib import Path
-from typing import Iterable
+from typing import Any, Dict, Iterable, Optional
 import requests
 
 from singer_sdk import typing as th  # JSON Schema typing helpers
@@ -154,9 +154,23 @@ class CampaignsMessagesStream(CustomerIoStream):
         row['campaign_id'] = context['campaign_id']
         return row
     
+    def get_url_params(
+        self, context: Optional[dict], next_page_token: Optional[Any]
+    ) -> Dict[str, Any]:
+        """Return a dictionary of values to be used in URL parameterization."""
+        params: dict = {
+            "page_size": 1000,
+            "limit": 1000
+        }
+        if next_page_token:
+            params["page"] = next_page_token
+        if self.replication_key:
+            params["sort"] = "asc"
+            params["order_by"] = self.replication_key
+        return params
+    
     def parse_response(self, response: requests.Response) -> Iterable[dict]:
         data = response.json()
-        # logging.warning(f"response - {data}")
         messages = data['messages']
 
         for message in messages:
