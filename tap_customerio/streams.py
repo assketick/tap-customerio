@@ -160,7 +160,7 @@ class CampaignsMessagesStream(CustomerIoStream):
         """Return a dictionary of values to be used in URL parameterization."""
         params: dict = {
             "page_size": 1000,
-            "limit": 1000
+            "limit": 1000,
         }
         if next_page_token:
             params["page"] = next_page_token
